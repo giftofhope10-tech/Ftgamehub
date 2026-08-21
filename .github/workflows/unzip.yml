@@ -11,13 +11,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Unzip project
+      - name: Find and unzip project
         run: |
+          ZIP=$(find . -maxdepth 2 -type f -iname "*.zip" | head -n 1)
+
+          if [ -z "$ZIP" ]; then
+            echo "ERROR: No ZIP file found in repository"
+            exit 1
+          fi
+
+          echo "Found ZIP: $ZIP"
           mkdir -p extracted
-          unzip -o "project-bolt-sb1-khq6hpl6e.zip" -d extracted
-          cp -r extracted/* .
+          unzip -o "$ZIP" -d extracted
+
+          cp -r extracted/. .
           rm -rf extracted
-          rm -f "project-bolt-sb1-khq6hpl6e.zip"
+          rm -f "$ZIP"
 
       - name: Commit extracted files
         run: |
