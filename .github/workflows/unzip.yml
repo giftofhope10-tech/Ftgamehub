@@ -1,0 +1,28 @@
+name: Unzip Project
+
+on:
+  workflow_dispatch:
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Unzip project
+        run: |
+          mkdir -p extracted
+          unzip -o "project-bolt-sb1-khq6hpl6e.zip" -d extracted
+          cp -r extracted/* .
+          rm -rf extracted
+          rm -f "project-bolt-sb1-khq6hpl6e.zip"
+
+      - name: Commit extracted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git diff --cached --quiet || git commit -m "Extract project files"
+          git push
